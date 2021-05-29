@@ -18,7 +18,7 @@ def maxZP(H):
         return 3
       return np.ceil(np.log10(pMax))+2
 
-def plotbode(H, fig, ylim = None):
+def plotbode(H, mag, phase, ylim = None):
     
     xlim = maxZP(H)   # Cálculo de la máxima frec representativa
 
@@ -26,8 +26,6 @@ def plotbode(H, fig, ylim = None):
     bode = ss.bode(H, w=w)            # Calculo del Bode
 
     # Creamos las figuras
-    #fig = plt.figure(figsize = (13, 4))
-    mag, phase = fig.add_subplot(1,2,1), fig.add_subplot(1, 2, 2)
     ejeX = bode[0] / (2*np.pi)
     mag.plot(ejeX, bode[1])
     phase.plot(ejeX, bode[2])
@@ -46,10 +44,11 @@ def plotbode(H, fig, ylim = None):
     phase.set_xscale('log')
     
     # Graficamos
-    mag.grid(); phase.grid(); mag.set_ylim(None if not ylim else [-125, 5])
+    mag.grid(); phase.grid()
+    mag.set_ylim(None if not ylim else [-125, 5])
     fig.subplots_adjust(wspace = .4)
 
-def filterImpulse(H, u,  figure, w=1, A=1):
+def filterImpulse(H, u, axis, w=1, A=1):
   
   t = np.linspace(0, 1/w, 500, endpoint=False)
   
@@ -57,17 +56,18 @@ def filterImpulse(H, u,  figure, w=1, A=1):
     u = A*t
   elif u == "seno":  
     u = A*(np.sin(w*t))
+  else:
+    u = np.ones(500)
 
   tout, yout, xout = ss.lsim((H.num, H.den), U=u, T=t)
-  figure.plot(tout, yout)
-  figure.ylabel("out")
-  figure.xlabel('time[sec]')
-  #plt.show()
+  axis.plot(tout, yout)
+  axis.set_ylabel("out")
+  axis.set_xlabel('time[sec]')
+  axis.grid(True)
 
 def plotZerosPoles(H, figure, ax):
   zeros, poles = H.zeros, H.poles
 
-  #fig, ax = plt.subplots()
   ax.scatter(np.real(zeros), np.imag(zeros), c="g", marker="o")
   ax.scatter(np.real(poles), np.imag(poles), c="r", marker="x")
 
@@ -76,36 +76,42 @@ def plotZerosPoles(H, figure, ax):
   ax.set_title('Gráfico Polos y Ceros')
 
   ax.grid(True)
-  #plt.show()
 
 ########################################################################################
 #                                       Primer parte
 ########################################################################################
-def filterSim (H_num, H_den, figure_scatter, ax_scatter, figure_bode, figure_impulse):
-  H=ss.TransferFunction(H_num,H_den)
-  plotZerosPoles(H, figure_scatter, ax_scatter)
-  filterImpulse(H, u, figure_impulse, w, A)
-  plotbode(figure_bode)
 
-num=[1]
-den=[1,0,1]
-fig1,ax1= plt.subplots()
-figuredb=plt.figure()
-figureimp=plt.figure()
-filterSim(H_num=[1],H_den=[1,0,1], figure_scatter=fig1, ax_scatter=ax1, figure_bode=figuredb, figure_impulse=figureimp)
+#generamos la Ganancia
+H_num=[1]
+H_den=[1,0,1]
+H=ss.TransferFunction(H_num,H_den)
 
-fig1.show()
-figuredb.show()
-figureimp.show()
+#Graficamos polos y ceros
+figure_scatter, ax_scatter= plt.subplots()
+plotZerosPoles(H, figure_scatter, ax_scatter)
+#figure_scatter.show()
+
+#Graficamos Bode
+fig = plt.figure(figsize = (13, 4))
+mag, phase = fig.add_subplot(1,2,1), fig.add_subplot(1, 2, 2)
+plotbode(H=H, mag=mag, phase=phase)
+#fig.show()
+
+#Graficamos impulso
+A=1
+w=1
+u = 'escalon'
+figure_impulse, ax_impulse = plt.subplots()
+filterImpulse(H, u, ax_impulse, w, A)
+#figure_impulse.show()
 
 ########################################################################################
 #                                       Segunda parte
 ########################################################################################
-# Segunda Parte
 def sumTransfer(a, b):
     return  [ np.polyadd( np.polymul( a[0], b[1] ), np.polymul( b[0], a[1] ) ), np.polymul(a[1], b[1]) ]
 
-def RLCSim(punta1=1 , punta2=2, R=0, L=0, C=0):
+def RLCSim(fig, punta1=1 , punta2=2, R=0, L=0, C=0):
     
     # H_base = s*C/(s^2LC+sCR+1)
     # Z = s^2*L + s*R + 1/C
@@ -140,7 +146,12 @@ def RLCSim(punta1=1 , punta2=2, R=0, L=0, C=0):
     
     if (np.array_equal(H.num, H.den)):  # Se rompe si H=1
       H = ss.TransferFunction([1], [1])
-      
-    plotbode(H)
 
-RLCSim(2, 4, 10, 10E-3, 10E-6)
+    fig = plt.figure(figsize = (13, 4))
+    mag, phase = fig.add_subplot(1,2,1), fig.add_subplot(1, 2, 2) 
+    plotbode(H=H, mag=mag, phase=phase)
+
+
+#Main
+fig = plt.figure(figsize = (13, 4))
+RLCSim(fig, 2, 4, 10, 10E-3, 10E-6)
