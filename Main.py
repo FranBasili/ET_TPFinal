@@ -87,7 +87,6 @@ def filterSim (H_num, H_den, figure_scatter, ax_scatter, figure_bode, figure_imp
   filterImpulse(H, u, figure_impulse, w, A)
   plotbode(figure_bode)
 
-
 num=[1]
 den=[1,0,1]
 fig1,ax1= plt.subplots()
@@ -102,6 +101,7 @@ figureimp.show()
 ########################################################################################
 #                                       Segunda parte
 ########################################################################################
+# Segunda Parte
 def sumTransfer(a, b):
     return  [ np.polyadd( np.polymul( a[0], b[1] ), np.polymul( b[0], a[1] ) ), np.polymul(a[1], b[1]) ]
 
@@ -138,8 +138,9 @@ def RLCSim(punta1=1 , punta2=2, R=0, L=0, C=0):
 
     H = ss.TransferFunction(np.polymul(H_base[0], H_2[0]), np.polymul(H_base[1], H_2[1]))
     
-    plotbode(H, 1)
-    print(H)
+    if (np.array_equal(H.num, H.den)):  # Se rompe si H=1
+      H = ss.TransferFunction([1], [1])
+      
+    plotbode(H)
 
-
-RLCSim(1, 2, 1000, 1E-3, 1E-6)
+RLCSim(2, 4, 10, 10E-3, 10E-6)
