@@ -3,14 +3,30 @@ import scipy.signal as ss
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plotbode(H, ylim = None):
+def maxZP(H):
+    zeroes, poles, gain=ss.tf2zpk(H.num, H.den)
+    zMax=abs(max(zeroes, default=0))
+    pMax=abs(min(poles, default=0))
     
-    #xlim = maxZP(H)
-    w = np.logspace(-4, 3, 10000)       # Revisar para graficar facha
+    if zMax > pMax:
+      if zMax==0:
+        return 3
+      return np.ceil(np.log10(zMax))+2
+    
+    else:
+      if pMax==0:
+        return 3
+      return np.ceil(np.log10(pMax))+2
+
+def plotbode(H, fig, ylim = None):
+    
+    xlim = maxZP(H)   # Cálculo de la máxima frec representativa
+
+    w = np.logspace(-4, xlim, 10000)       # Revisar para graficar facha
     bode = ss.bode(H, w=w)            # Calculo del Bode
 
     # Creamos las figuras
-    fig = plt.figure(figsize = (13, 4))
+    #fig = plt.figure(figsize = (13, 4))
     mag, phase = fig.add_subplot(1,2,1), fig.add_subplot(1, 2, 2)
     ejeX = bode[0] / (2*np.pi)
     mag.plot(ejeX, bode[1])
@@ -33,8 +49,59 @@ def plotbode(H, ylim = None):
     mag.grid(); phase.grid(); mag.set_ylim(None if not ylim else [-125, 5])
     fig.subplots_adjust(wspace = .4)
 
+def filterImpulse(H, u,  figure, w=1, A=1):
+  
+  t = np.linspace(0, 1/w, 500, endpoint=False)
+  
+  if u == "escalon":
+    u = A*t
+  elif u == "seno":  
+    u = A*(np.sin(w*t))
 
-# Segunda Parte
+  tout, yout, xout = ss.lsim((H.num, H.den), U=u, T=t)
+  figure.plot(tout, yout)
+  figure.ylabel("out")
+  figure.xlabel('time[sec]')
+  #plt.show()
+
+def plotZerosPoles(H, figure, ax):
+  zeros, poles = H.zeros, H.poles
+
+  #fig, ax = plt.subplots()
+  ax.scatter(np.real(zeros), np.imag(zeros), c="g", marker="o")
+  ax.scatter(np.real(poles), np.imag(poles), c="r", marker="x")
+
+  ax.set_xlabel(r'$\sigma$', fontsize=15)
+  ax.set_ylabel(r'$jw$', fontsize=15)
+  ax.set_title('Gráfico Polos y Ceros')
+
+  ax.grid(True)
+  #plt.show()
+
+########################################################################################
+#                                       Primer parte
+########################################################################################
+def filterSim (H_num, H_den, figure_scatter, ax_scatter, figure_bode, figure_impulse):
+  H=ss.TransferFunction(H_num,H_den)
+  plotZerosPoles(H, figure_scatter, ax_scatter)
+  filterImpulse(H, u, figure_impulse, w, A)
+  plotbode(figure_bode)
+
+
+num=[1]
+den=[1,0,1]
+fig1,ax1= plt.subplots()
+figuredb=plt.figure()
+figureimp=plt.figure()
+filterSim(H_num=[1],H_den=[1,0,1], figure_scatter=fig1, ax_scatter=ax1, figure_bode=figuredb, figure_impulse=figureimp)
+
+fig1.show()
+figuredb.show()
+figureimp.show()
+
+########################################################################################
+#                                       Segunda parte
+########################################################################################
 def sumTransfer(a, b):
     return  [ np.polyadd( np.polymul( a[0], b[1] ), np.polymul( b[0], a[1] ) ), np.polymul(a[1], b[1]) ]
 
