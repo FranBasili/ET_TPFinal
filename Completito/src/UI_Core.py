@@ -1,7 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow
-from design import Ui_MainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from src.ui.design import Ui_MainWindow
 import numpy as np
-import sys
 import scipy.signal as ss
 
 
@@ -16,7 +15,7 @@ class MyApp(QMainWindow, Ui_MainWindow):
 
         self.filterType = ""
 
-        self.actionPasa_Bajos.triggered.connect(self.setPasaBajos)
+        self.actionPasa_Bajos.triggered.connect(self.setPasaBajos)  # Seleccion del filtro
         self.actionPasa_Altos.triggered.connect(self.setPasaAltos)
         self.actionPasa_Todo.triggered.connect(self.setPasaTodo)
         self.actionPasa_Altos_2.triggered.connect(self.setPasaAltos2)
@@ -52,11 +51,8 @@ class MyApp(QMainWindow, Ui_MainWindow):
     
     
     def btn1Click(self):
-        # num = [1, 5]
-        # den = [1, 5, 6]
-        # k=10
-        # print("Filtro:", self.filterType)
-        if self.filterType:     # Solo actuamos si hay un filtro seleccionao
+
+        if self.filterType:     # Solo actuamos si hay un filtro seleccionado
             num = [1]
             den = [1]
             k = self.kt.value()
@@ -143,6 +139,8 @@ class MyApp(QMainWindow, Ui_MainWindow):
             self.Bode_Graph_2.clearFigure()
 
 if __name__ == "__main__":
+    import sys
+
     app = QApplication([])
     window = MyApp()
     window.show()

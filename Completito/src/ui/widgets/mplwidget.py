@@ -1,11 +1,11 @@
 # ------------------------------------------------------
 # -------------------- mplwidget.py --------------------
 # ------------------------------------------------------
-from PyQt5.QtWidgets import*
+from PyQt5.QtWidgets import QWidget, QVBoxLayout
 
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 
-from matplotlib.figure import Figure
+# from matplotlib.figure import Figure
 
 import scipy.signal as ss
 import matplotlib.pyplot as plt
@@ -18,7 +18,7 @@ class MplWidget(QWidget):
 
         QWidget.__init__(self, parent)
         
-        self.figure = Figure()
+        self.figure = plt.figure()
         # self.figure = plt.figure(figsize = (13, 2))
         self.canvas = FigureCanvas(self.figure)
 

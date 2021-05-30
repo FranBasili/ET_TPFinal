@@ -486,7 +486,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
         self.label.setSizePolicy(sizePolicy)
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("RLC_img.png"))
+        self.label.setPixmap(QtGui.QPixmap("res/RLC_img.png"))
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
         self.horizontalLayout_16.addWidget(self.label)
@@ -738,7 +738,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
-        self.tabWidget_2.setCurrentIndex(1)
+        self.tabWidget_2.setCurrentIndex(0)
         self.actionPasa_Altos.triggered.connect(self.cero_simple.hide)
         self.actionPasa_Altos.triggered.connect(self.cero_doble.hide)
         self.actionPasa_Altos.triggered.connect(self.polo_doble.hide)
@@ -832,7 +832,8 @@ class Ui_MainWindow(object):
         self.actionGr_fico_de_Bode.setText(_translate("MainWindow", "Gráfico de Bode"))
         self.actionDiagrama_de_polos_y_ceros.setText(_translate("MainWindow", "Diagrama de polos y ceros"))
         self.actionaaa.setText(_translate("MainWindow", "aaa"))
-from mplwidget import MplWidget
+
+from src.ui.widgets.mplwidget import MplWidget
 
 
 if __name__ == "__main__":
