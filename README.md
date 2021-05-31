@@ -7,7 +7,7 @@ Este TP consiste en poder simular ciertas caracteristicas de algunos circuitos q
 * 3.Se abrirá la GUI del programa, para cerrarlo debe presionar la cruz roja como la mayoria de los programas
 -------------------------------------
 ### IMPORTANTE:
-Tenga en cuanta que para poder ejecutar el script sin problemas debe tener las siguientes liberias de python instaldas:
+Tenga en cuenta que para poder ejecutar el script sin problemas debe tener las siguientes liberias de python instaldas:
 * matplotlib
 * PyQt5
 * numpy
