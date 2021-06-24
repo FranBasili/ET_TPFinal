@@ -9,7 +9,7 @@
 
 -------------------------------------------------
 ### 1 - Python
-En esta carpeta se encuentra la interfaz realizada con Python junto con un README intructivo para poder ejecitar el script.
+En esta carpeta se encuentra los archivos de la interfaz realizada en Python junto con un README intructivo para poder ejecutar el script.
 
 ### 2 - LTspice
 En esta carpeta se encuentran los archivos de simulación de un cirtuito en LTspice, las curvas de dicha simulación y los datos para poder realizar los gráficos gracias a in script de Python.
