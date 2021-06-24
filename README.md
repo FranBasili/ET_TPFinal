@@ -1,11 +1,11 @@
 # Trabajo Práctico Final: Electrotecnia I (22.02)
 -------------------------------------------------
 Grupo Nº3
-Basili, Francisco
-Bustelo, Nicolás
-Peralta,  Sergio Andrés
-Schneeberger, Bautista
-Wahle, Kevin Amiel
+* Basili, Francisco
+* Bustelo, Nicolás
+* Peralta,  Sergio Andrés
+* Schneeberger, Bautista
+* Wahle, Kevin Amiel
 
 -------------------------------------------------
 ## 1 - Python
