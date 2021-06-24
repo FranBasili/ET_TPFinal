@@ -19,12 +19,7 @@ class MplWidget(QWidget):
         QWidget.__init__(self, parent)
         
         self.figure = plt.figure()
-        # self.figure = plt.figure(figsize = (13, 2))
         self.canvas = FigureCanvas(self.figure)
-
-
-        # A partir de aca es lo mismo que con pyplot, solo que el manejo no es automatico, sino
-        # que lo hace uno con criterio, entonces creamos un par de ejes
         
         self.axes = self.figure.add_subplot()
         self.axes.set_position([0.125, 0.15, 0.775, 0.77])
@@ -34,29 +29,30 @@ class MplWidget(QWidget):
         self.setLayout(vertical_layout)
 
         
-    def _maxZP(self, H):
+    def _maxZP(self, H):    # Busca el polo o cero de mayor frecuencia, para que se vea en el diagrama de Bode
+                            # Devuelve la decada en la que se encuentra ese polo/cero
         zeroes, poles, gain=ss.tf2zpk(H.num, H.den)
         zMax=abs(max(zeroes, default=0))
         pMax=abs(min(poles, default=0))
         
         if zMax > pMax:
             if zMax==0:
-                return 3
+                return 3    # Si no hay polos ni ceros, dibuja 3 decadas
             return np.ceil(np.log10(zMax))+2
             
         else:
             if pMax==0:
-                return 3
+                return 3    # Si no hay polos ni ceros, dibuja 3 decadas
             return np.ceil(np.log10(pMax))+2
 
     def plotBodeModule(self, H):
 
         self.axes.clear()
 
-        xlim = self._maxZP(H)   # Cálculo de la máxima frec representativa
+        xlim = self._maxZP(H)                   # Cálculo de la máxima frec representativa
 
-        w = np.logspace(-4, xlim, 10000)       # Revisar para graficar facha
-        eje, modulo, fase= ss.bode(H, w=w)            # Calculo del Bode
+        w = np.logspace(-4, xlim, 10000)        # Revisar para graficar facha
+        eje, modulo, fase= ss.bode(H, w=w)      # Calculo del Bode
 
 
         # Creamos las figuras
@@ -64,7 +60,6 @@ class MplWidget(QWidget):
         self.axes.plot(ejeX, modulo)
 
         # Ponemos comentarios
-        # self.axes.set_title('Magnitud')
         self.axes.set_xlabel(r'f [$Hz$] | log')
         self.axes.set_ylabel(r'|H(j$\omega$)| [dB]')
 
@@ -82,15 +77,14 @@ class MplWidget(QWidget):
 
         xlim = self._maxZP(H)   # Cálculo de la máxima frec representativa
 
-        w = np.logspace(-4, xlim, 10000)       # Revisar para graficar facha
-        eje, modulo, fase = ss.bode(H, w=w)            # Calculo del Bode
+        w = np.logspace(-4, xlim, 10000)        # Revisar para graficar facha
+        eje, modulo, fase = ss.bode(H, w=w)     # Calculo del Bode
 
         # Creamos las figuras
         ejef = eje / (2*np.pi)
         self.axes.plot(ejef, fase)
 
         # Ponemos comentarios
-        # self.axes.set_title('Fase')
         self.axes.set_xlabel(r'f [$Hz$] | log')
         self.axes.set_ylabel(r'Fase [deg]')
 
@@ -128,6 +122,7 @@ class MplWidget(QWidget):
             t = np.linspace(0, xMax, 10000, endpoint=False)
             u = A*(np.sin(w*t))
         else:
+            t = np.linspace(0, 5, 10000, endpoint=False)
             u = np.ones(10000)
 
         tout, yout, xout = ss.lsim((H.num, H.den), U=u, T=t)
@@ -156,8 +151,6 @@ class MplWidget(QWidget):
 
         tipRange = range(puntaMin, puntaMax+1)
 
-        # print('punta1:', punta1, 'punta2:', punta2, 'tipRange:', tipRange)
-
         if (all(node in tipRange for node in [1,2])):           # Resistencia
             H_2 = self._sumTransfer(H_2, H_R)
 
@@ -184,7 +177,6 @@ class MplWidget(QWidget):
         num_str, den_str = tfToString(H)
 
         self.figure.suptitle('$H(s) = \\frac{'+ num_str +'}{'+ den_str+'}$')
-        # self.figure.suptitle('Diagrama de Bode\n$H(s) = \\frac{'+ num_str +'}{'+ den_str+'}$')
         mag, phase = self.figure.add_subplot(1,2,1), self.figure.add_subplot(1, 2, 2)
         self.figure.subplots_adjust(wspace = .4)
         self._plotBode(H=H, mag=mag, phase=phase)
@@ -194,8 +186,8 @@ class MplWidget(QWidget):
         
         xlim = self._maxZP(H)   # Cálculo de la máxima frec representativa
 
-        w = np.logspace(-4, xlim, 10000)       # Revisar para graficar facha
-        bode = ss.bode(H, w=w)            # Calculo del Bode
+        w = np.logspace(-4, xlim, 10000)        # Revisar para graficar facha
+        bode = ss.bode(H, w=w)                  # Calculo del Bode
 
         # Creamos las figuras
         ejeX = bode[0] / (2*np.pi)
@@ -229,28 +221,26 @@ def tfToString(H):
     num_str = ""
     den_str = ""
 
-    for i in range(len(H.num)):
-        q = len(H.num)-i-1
-        if H.num[i] != 0:
-
-            if i>0 and H.num[i-1] !=0:
-                num_str += ' + '
-
-            num_str += str(H.num[i])
-            if  q > 1:
-                num_str += 's^' + str(q)
-            elif q==1:
-                num_str += 's'
-
-    for index in range(len(H.den)):
-        exponente = len(H.den)-index-1
-        if H.den[index] != 0:
-            if index>0 and H.den[index-1] !=0:
-                den_str += ' + '
-            den_str += str(H.den[index])
-            if  exponente > 1:
-                den_str += 's^' + str(exponente)
-            elif exponente==1:
-                den_str += 's'
+    num_str = arrToPol(H.num)
+    den_str = arrToPol(H.den)
 
     return num_str, den_str
+
+def arrToPol(arr):
+    pol = ''
+    for i in range(len(arr)):
+        q = len(arr)-i-1
+        if arr[i] != 0:
+
+            if i>0 and arr[i-1] > 0:
+                pol += ' + '
+
+            pol += "{:.2f}".format(arr[i])
+            if  q > 1:
+                pol += 's^' + str(q)
+            elif q==1:
+                pol += 's'
+        elif i > 0 and i < len(arr)-1 and arr[i+1] > 0:
+            pol += ' + '
+
+    return pol 

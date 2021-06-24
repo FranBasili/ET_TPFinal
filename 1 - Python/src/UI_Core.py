@@ -3,15 +3,13 @@ from src.ui.design import Ui_MainWindow
 import numpy as np
 import scipy.signal as ss
 
-
-
 class MyApp(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
         QMainWindow.__init__(self, *args, **kwargs)
-        self.setupUi(self)	# como siempre, inicializamos todo
+        self.setupUi(self)      # como siempre, inicializamos todo
 
-        self.okbtn.clicked.connect(self.btn1Click)   # Boton parte 1
-        self.okbtn_ok.clicked.connect(self.btn2Click)    # Boton parte 2
+        self.okbtn.clicked.connect(self.btn1Click)      # Boton parte 1
+        self.okbtn_ok.clicked.connect(self.btn2Click)   # Boton parte 2
 
         self.filterType = ""
 
