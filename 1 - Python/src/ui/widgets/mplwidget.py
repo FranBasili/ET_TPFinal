@@ -124,7 +124,7 @@ class MplWidget(QWidget):
             t = np.linspace(0, 5, 10000, endpoint=False)
             u = A*np.ones(10000)
         elif u == "seno":  
-            xMax= 1/w
+            xMax= 2*2*np.pi/w
             t = np.linspace(0, xMax, 10000, endpoint=False)
             u = A*(np.sin(w*t))
         else:
